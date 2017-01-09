@@ -26,6 +26,10 @@ http {
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for"';
 
+{% if nginx_extra_log_format %}
+    log_format {{ nginx_extra_log_format|indent(4, False) }};
+{% endif %}
+
     access_log  {{ nginx_access_log }};
 
     sendfile        {{ nginx_sendfile }};
