@@ -3,6 +3,12 @@ user  {{ nginx_user }};
 error_log  {{ nginx_error_log }};
 pid        {{ nginx_pidfile }};
 
+{% if nginx_modules |length > 0 %}
+{% for m in nginx_modules %}
+load_module modules/{{ m }};
+{% endfor %}
+{% endif %}
+
 worker_processes  {{ nginx_worker_processes }};
 
 events {
