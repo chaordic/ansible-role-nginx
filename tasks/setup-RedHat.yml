@@ -12,3 +12,9 @@
     name: "{{ nginx_package_name }}"
     state: installed
     enablerepo: nginx
+
+- name: Ensure nginx modules is installed
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ nginx_package_modules }}"
