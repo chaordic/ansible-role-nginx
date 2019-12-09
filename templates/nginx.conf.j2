@@ -41,6 +41,7 @@ http {
 
     keepalive_timeout  {{ nginx_keepalive_timeout }};
     keepalive_requests {{ nginx_keepalive_requests }};
+    send_timeout {{ nginx_send_timeout }};
 
     #gzip  on;
 

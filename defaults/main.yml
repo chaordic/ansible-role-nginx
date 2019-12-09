@@ -24,6 +24,7 @@ nginx_tcp_nodelay: "on"
 
 nginx_keepalive_timeout: "65"
 nginx_keepalive_requests: "100"
+nginx_send_timeout: "60s"
 
 nginx_client_max_body_size: "64m"
 
