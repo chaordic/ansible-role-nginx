@@ -2,11 +2,13 @@
 # Variable setup.
 - name: Include OS-specific variables.
   include_vars: "{{ ansible_os_family }}.yml"
+  tags: always
 
 - name: Define nginx_user.
   set_fact:
     nginx_user: "{{ __nginx_user }}"
   when: nginx_user is not defined
+  tags: always
 
 # Setup/install tasks.
 - include: setup-RedHat.yml
@@ -23,6 +25,7 @@
 
 # Vhost configuration.
 - include: vhosts.yml
+  tags: nginx-config
 
 # Nginx setup.
 - name: Copy nginx configuration in place.
@@ -32,6 +35,7 @@
     owner: root
     group: "{{ root_group }}"
     mode: 0644
+  tags: nginx-config
   notify:
     - reload nginx
 
