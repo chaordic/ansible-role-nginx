@@ -25,7 +25,7 @@
 
 # Vhost configuration.
 - include: vhosts.yml
-  tags: nginx-config
+  tags: nginx-vhosts
 
 # Nginx setup.
 - name: Copy nginx configuration in place.
