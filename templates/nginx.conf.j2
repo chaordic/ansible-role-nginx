@@ -9,18 +9,25 @@ load_module modules/{{ m }};
 {% endfor %}
 {% endif %}
 
+{% block worker %}
 worker_processes  {{ nginx_worker_processes }};
-
-events {
-    worker_connections  {{ nginx_worker_connections }};
-    multi_accept {{ nginx_multi_accept }};
-}
+{% endblock %}
 
 {% if nginx_extra_conf_options %}
 {{ nginx_extra_conf_options }}
 {% endif %}
 
+{% block events %}
+events {
+    worker_connections  {{ nginx_worker_connections }};
+    multi_accept {{ nginx_multi_accept }};
+}
+{% endblock %}
+
 http {
+    {% block http_begin %}{% endblock %}
+
+{% block http_basic %}
     include       {{ nginx_mime_file_path }};
     default_type  application/octet-stream;
 
@@ -28,10 +35,7 @@ http {
 
     client_max_body_size {{ nginx_client_max_body_size }};
 
-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for" '
-                      '$request_time $upstream_response_time $pipe';
+    log_format  main  {{ nginx_log_format|indent(23) }};
 
     access_log  {{ nginx_access_log }};
 
@@ -43,16 +47,21 @@ http {
     keepalive_requests {{ nginx_keepalive_requests }};
     send_timeout {{ nginx_send_timeout }};
 
-    #gzip  on;
-
+    server_tokens {{ nginx_server_tokens }};
 {% if nginx_proxy_cache_path %}
     proxy_cache_path {{ nginx_proxy_cache_path }};
 {% endif %}
+{% endblock %}
+
+{% block http_gzip %}
+    # gzip on;
+{% endblock %}
 
 {% if nginx_extra_http_options %}
     {{ nginx_extra_http_options|indent(4, False) }}
 {% endif %}
 
+{% block http_upstream %}
 {% for upstream in nginx_upstreams %}
     upstream {{ upstream.name }} {
 {% if upstream.strategy is defined %}
@@ -66,9 +75,14 @@ http {
 {% endif %}
     }
 {% endfor %}
+{% endblock %}
 
+{% block http_includes %}
     include {{ nginx_conf_path }}/*.conf;
 {% if nginx_conf_path != nginx_vhost_path %}
     include {{ nginx_vhost_path }}/*;
 {% endif %}
+{% endblock %}
+
+    {% block http_end %}{% endblock %}
 }
